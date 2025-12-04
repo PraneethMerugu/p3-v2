@@ -2,9 +2,7 @@ using Pkg;
 Pkg.activate(joinpath(@__DIR__, ".."));
 using GLMakie, JLD2, P3_V2
 
-# Explicitly include the standalone visualizations module
-include(joinpath(@__DIR__, "../src/visualizations.jl"))
-using .Visualizations
+# Visualizations are now exported by P3_V2
 
 println("--- Chaos & Complexity Analysis (Plot) ---")
 

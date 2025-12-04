@@ -12,14 +12,14 @@ export get_jacobian_at_point, analyze_equilibrium
 
 include("chaos.jl")
 using .Chaos
-export get_ds
+export get_ds, compute_lz_complexity, compute_markov_matrix, compute_chaos_grid
 
 # include("utils.jl")
 # using .Utils
 # export set_project_theme!
 
-# include("visualizations.jl")
-# using .Visualizations
-# export animate_collision, animate_sensitivity, plot_heatmap
+include("visualizations.jl")
+using .Visualizations
+export animate_collision, animate_sensitivity, plot_heatmap, set_project_theme!, plot_vector_field!
 
 end

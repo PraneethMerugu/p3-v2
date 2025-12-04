@@ -5,7 +5,7 @@ using P3_V2
 using P3_V2.Model
 using P3_V2.Chaos
 
-export animate_collision, animate_sensitivity, plot_heatmap, set_project_theme!
+export animate_collision, animate_sensitivity, plot_heatmap, set_project_theme!, plot_vector_field!
 
 function set_project_theme!()
     set_theme!(theme_black())
@@ -68,8 +68,8 @@ function animate_collision(ε_range, output_path)
 
     fig = Figure(size=(800, 800))
     ax = Axis(fig[1, 1], title="Homoclinic Collision", xlabel="x", ylabel="y")
-    xlims!(ax, -1.5, 1.5)
-    ylims!(ax, -1.0, 1.0)
+    xlims!(ax, -2, 2)
+    ylims!(ax, -2, 2)
 
     # Fixed parameters
     μ_val = -0.225
@@ -231,6 +231,34 @@ function plot_heatmap(A_vals, ω_vals, matrix, title_str, output_path)
 
     save(output_path, fig)
     println("Saved $output_path")
+end
+
+"""
+    plot_vector_field!(ax, μ, ε, A, ω; x_range=-2.5..2.5, y_range=-2.0..2.0)
+
+Plots a dynamic vector field for the Duffing oscillator using streamplot.
+Parameters μ, ε, A, ω can be Observables or Reals.
+The vector field is computed at t=0 (Poincaré section approximation).
+Defaults: x_range=LinRange(-2.5, 2.5, 100), y_range=LinRange(-2.0, 2.0, 100)
+"""
+function plot_vector_field!(ax, μ, ε, A, ω; x_range=LinRange(-2.5, 2.5, 100), y_range=LinRange(-2.0, 2.0, 100))
+    # Ensure inputs are observables for uniform handling
+    μ_obs = μ isa Observable ? μ : Observable(μ)
+    ε_obs = ε isa Observable ? ε : Observable(ε)
+    A_obs = A isa Observable ? A : Observable(A)
+    ω_obs = ω isa Observable ? ω : Observable(ω)
+
+    # Create an Observable function for streamplot
+    # This function updates whenever any parameter changes
+    field_function = lift(μ_obs, ε_obs, A_obs, ω_obs) do m, e, a, w
+        return (x, y) -> Point2f(
+            y,
+            x - x^3 - e * y - m * x^2 * y + a * cos(w * 0.0) # t=0
+        )
+    end
+
+    # Plot streamplot with the Observable function
+    streamplot!(ax, field_function, x_range, y_range, colormap=:magma, arrow_size=10)
 end
 
 end
